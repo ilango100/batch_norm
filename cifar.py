@@ -8,6 +8,8 @@ __cifar_10_url = "http://www.cs.utoronto.ca/%7Ekriz/cifar-10-binary.tar.gz"
 __cifar_100_url = "http://www.cs.utoronto.ca/%7Ekriz/cifar-100-binary.tar.gz"
 
 cifar10_dir = "cifar-10-batches-bin"
+cifar10_labels = open(os.path.join(
+    cifar10_dir, "batches.meta.txt"), "r").read().splitlines()
 
 
 def cifar10_train():
