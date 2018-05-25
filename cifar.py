@@ -11,7 +11,7 @@ cifar10_dir = "cifar-10-batches-bin"
 
 
 def cifar10_labels():
-    cifar10_labels = open(os.path.join(
+    return open(os.path.join(
         cifar10_dir, "batches.meta.txt"), "r").read().splitlines()
 
 
