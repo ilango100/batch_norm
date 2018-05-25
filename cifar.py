@@ -27,6 +27,22 @@ def cifar10_train():
     return trim, trlab
 
 
+def cifar10_test():
+    test_batch = os.path.join(cifar10_dir, "test_batch.bin")
+
+    telab = []
+    teim = []
+    with open(test_batch, "rb") as f:
+        for _ in range(10000):
+            telab.append(int.from_bytes(f.read(1), 'big'))
+            teim.append(list(f.read(3072)))
+    telab = np.array(telab)
+    teim = np.array(teim)
+    teim.shape = (10000, 3, 32, 32)
+    teim = teim.transpose([0, 2, 3, 1])
+    return teim, telab
+
+
 def prepare_cifar_10():
     path = os.path.basename(__cifar_10_url)
     if os.path.exists(path):
