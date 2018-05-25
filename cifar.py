@@ -37,4 +37,4 @@ def __download_file(url, path):
             for chunk in r.iter_content(chunk_size=1024):
                 f.write(chunk)
     else:
-        raise IOError("Error downloading cifar 10 file")
+        raise IOError("Error downloading %s" % url)
