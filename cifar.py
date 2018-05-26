@@ -8,6 +8,7 @@ __cifar_10_url = "http://www.cs.utoronto.ca/%7Ekriz/cifar-10-binary.tar.gz"
 __cifar_100_url = "http://www.cs.utoronto.ca/%7Ekriz/cifar-100-binary.tar.gz"
 
 cifar10_dir = "cifar-10-batches-bin"
+batch_size = 1000
 
 
 def cifar10_labels():
@@ -25,11 +26,21 @@ def cifar10_train():
             for _ in range(10000):
                 trlab.append(int.from_bytes(f.read(1), 'big'))
                 trim.append(list(f.read(3072)))
-    trlab = np.array(trlab)
-    trim = np.array(trim)
-    trim.shape = (50000, 3, 32, 32)
-    trim = trim.transpose([0, 2, 3, 1])
-    return trim, trlab
+                if len(trlab) == batch_size:
+                    trlab = np.array(trlab)
+                    trim = np.array(trim)
+                    trim.shape = (1000, 3, 32, 32)
+                    trim = trim.transpose([0, 2, 3, 1])
+                    trim = trim / 255
+                    yield ({"images": trim}, trlab)
+                    trim, trlab = [], []
+            if len(trlab) > 0:
+                trlab = np.array(trlab)
+                trim = np.array(trim)
+                trim.shape = (1000, 3, 32, 32)
+                trim = trim.transpose([0, 2, 3, 1])
+                trim = trim / 255
+                yield ({"images": trim}, trlab)
 
 
 def cifar10_test():
@@ -41,11 +52,21 @@ def cifar10_test():
         for _ in range(10000):
             telab.append(int.from_bytes(f.read(1), 'big'))
             teim.append(list(f.read(3072)))
-    telab = np.array(telab)
-    teim = np.array(teim)
-    teim.shape = (10000, 3, 32, 32)
-    teim = teim.transpose([0, 2, 3, 1])
-    return teim, telab
+            if len(telab) == batch_size:
+                telab = np.array(telab)
+                teim = np.array(teim)
+                teim.shape = (1000, 3, 32, 32)
+                teim = teim.transpose([0, 2, 3, 1])
+                teim = teim / 255
+                yield ({"images": teim}, telab)
+                teim, telab = [], []
+        if len(telab) > 0:
+            telab = np.array(telab)
+            teim = np.array(teim)
+            teim.shape = (1000, 3, 32, 32)
+            teim = teim.transpose([0, 2, 3, 1])
+            teim = teim / 255
+            yield ({"images": teim}, telab)
 
 
 def prepare_cifar_10():
