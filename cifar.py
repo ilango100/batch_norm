@@ -9,6 +9,7 @@ __cifar_100_url = "http://www.cs.utoronto.ca/%7Ekriz/cifar-100-binary.tar.gz"
 
 cifar10_dir = "cifar-10-batches-bin"
 batch_size = 1000
+epochs = 10
 
 
 def cifar10_labels():
@@ -18,36 +19,35 @@ def cifar10_labels():
 
 def cifar10_train():
     data_batch = os.path.join(cifar10_dir, "data_batch_%d.bin")
-    trlab = []
-    trim = []
+    trim, trlab = [], []
 
-    for i in range(1, 6):
-        with open(data_batch % i, "rb") as f:
-            for _ in range(10000):
-                trlab.append(int.from_bytes(f.read(1), 'big'))
-                trim.append(list(f.read(3072)))
-                if len(trlab) == batch_size:
+    for _ in range(epochs):
+        for i in range(1, 6):
+            with open(data_batch % i, "rb") as f:
+                for _ in range(10000):
+                    trlab.append(int.from_bytes(f.read(1), 'big'))
+                    trim.append(list(f.read(3072)))
+                    if len(trlab) == batch_size:
+                        trlab = np.array(trlab)
+                        trim = np.array(trim)
+                        trim.shape = (1000, 3, 32, 32)
+                        trim = trim.transpose([0, 2, 3, 1])
+                        trim = trim / 255
+                        yield ({"images": trim}, trlab)
+                        trim, trlab = [], []
+                if len(trlab) > 0:
                     trlab = np.array(trlab)
                     trim = np.array(trim)
                     trim.shape = (1000, 3, 32, 32)
                     trim = trim.transpose([0, 2, 3, 1])
                     trim = trim / 255
                     yield ({"images": trim}, trlab)
-                    trim, trlab = [], []
-            if len(trlab) > 0:
-                trlab = np.array(trlab)
-                trim = np.array(trim)
-                trim.shape = (1000, 3, 32, 32)
-                trim = trim.transpose([0, 2, 3, 1])
-                trim = trim / 255
-                yield ({"images": trim}, trlab)
 
 
 def cifar10_test():
     test_batch = os.path.join(cifar10_dir, "test_batch.bin")
+    teim, telab = [], []
 
-    telab = []
-    teim = []
     with open(test_batch, "rb") as f:
         for _ in range(10000):
             telab.append(int.from_bytes(f.read(1), 'big'))
