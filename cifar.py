@@ -8,8 +8,8 @@ __cifar_10_url = "http://www.cs.utoronto.ca/%7Ekriz/cifar-10-binary.tar.gz"
 __cifar_100_url = "http://www.cs.utoronto.ca/%7Ekriz/cifar-100-binary.tar.gz"
 
 cifar10_dir = "cifar-10-batches-bin"
-batch_size = 1000
-epochs = 10
+batch_size = 5000
+epochs = 2
 
 
 def cifar10_labels():
@@ -30,7 +30,7 @@ def cifar10_train():
                     if len(trlab) == batch_size:
                         trlab = np.array(trlab)
                         trim = np.array(trim)
-                        trim.shape = (1000, 3, 32, 32)
+                        trim.shape = (batch_size, 3, 32, 32)
                         trim = trim.transpose([0, 2, 3, 1])
                         trim = trim / 255
                         yield ({"images": trim}, trlab)
@@ -38,7 +38,7 @@ def cifar10_train():
                 if len(trlab) > 0:
                     trlab = np.array(trlab)
                     trim = np.array(trim)
-                    trim.shape = (1000, 3, 32, 32)
+                    trim.shape = (len(trlab), 3, 32, 32)
                     trim = trim.transpose([0, 2, 3, 1])
                     trim = trim / 255
                     yield ({"images": trim}, trlab)
@@ -55,7 +55,7 @@ def cifar10_test():
             if len(telab) == batch_size:
                 telab = np.array(telab)
                 teim = np.array(teim)
-                teim.shape = (1000, 3, 32, 32)
+                teim.shape = (batch_size, 3, 32, 32)
                 teim = teim.transpose([0, 2, 3, 1])
                 teim = teim / 255
                 yield ({"images": teim}, telab)
@@ -63,7 +63,7 @@ def cifar10_test():
         if len(telab) > 0:
             telab = np.array(telab)
             teim = np.array(teim)
-            teim.shape = (1000, 3, 32, 32)
+            teim.shape = (len(telab), 3, 32, 32)
             teim = teim.transpose([0, 2, 3, 1])
             teim = teim / 255
             yield ({"images": teim}, telab)
